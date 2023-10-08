@@ -1,0 +1,113 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "pytest-build-docker"
+description = "Build a Docker image from a Pytest fixture to easily run smoke tests."
+authors = [
+    { name = "Viktor Rimark",email = "git@rxbc.se" }
+]
+
+urls = { homepage = "https://blog.rxbc.se" }
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "License :: OSI Approved :: MIT License"
+]
+dynamic = ["version", "readme"]
+
+requires-python = ">=3.8"
+
+# Specify the packages required by the project. For libraries, the constraints
+# should be loosely defined as too narrow constraints will make it hard to
+# install the package together with other libraries and will prevent users from
+# getting security updates.
+
+# dependencies = [
+# "some_package"
+# ]
+
+[project.optional-dependencies]
+# pip-compile doesn't work well with extras referencing the package itself when
+# hashes are required, as the package itself will be added to the list.
+# Therefore the dependency groups "dev" is just for developer convenience and
+# should not list dependencies itself. The compilation in tox lists all extras
+# explicitly (i.e., --extra format,lint,types,test
+dev = [ # All dev dependencies
+    "pytest_build_docker[format]",
+    "pytest_build_docker[lint]",
+    "pytest_build_docker[test]",
+]
+format = [
+  "black",
+  "isort"
+]
+lint = [
+    "black",
+    "isort",
+    "pylint"
+]
+types = [
+    "mypy"
+]
+test = [
+    "pytest",
+    "pytest-cov"
+]
+
+[tool.setuptools.dynamic]
+version = {attr = "pytest_build_docker.__version__"}
+readme = {file = "README.md", content-type = "text/markdown"}
+
+[tool.isort]
+# For compatibility with Black
+profile = "black"
+
+[tool.mypy]
+# Config equivalent to mypy --strict with ignore_missing_import added for
+# convenience.
+check_untyped_defs = true
+disallow_any_generics = true
+disallow_incomplete_defs = true
+disallow_subclassing_any = true
+disallow_untyped_calls = true
+disallow_untyped_decorators = true
+disallow_untyped_defs = true
+no_implicit_optional = true
+no_implicit_reexport = true
+ignore_missing_imports = true
+strict_equality = true
+warn_redundant_casts = true
+warn_return_any = true
+warn_unused_configs = true
+warn_unused_ignores = true
+
+[tool.coverage_paths]
+# Define which paths that coverage should be measured for. We want to measure
+# coverage against the built/installed package.
+source = ["src", ".tox/*/site-packages/"]
+
+[tool.coverage.report]
+show_missing = true
+
+[tool.pylint.'FORMAT']
+# Black defaults to 88 character line length,
+max-line-length = 88
+
+[tool.pylint.'MESSAGES_CONTROL']
+# Disable some pylint messages that I find annoying. You are recommended to
+# review this list and add or remove depending on what you see fit.
+disable = [
+  "invalid-name",
+  "too-many-instance-attributes",
+  "too-few-public-methods",
+  "too-many-arguments",
+  "logging-format-interpolation",
+  "logging-fstring-interpolation",
+  "fixme"
+]
